@@ -14,10 +14,10 @@ dependencies:
   - onnxruntime
   - pip
   - pysoundfile
-  - pytorch
-  - pytorch-cuda
-  - torchaudio
-  - torchmetrics
+#  - pytorch
+#  - pytorch-cuda
+#  - torchaudio
+#  - torchmetrics
   - tqdm
   - wandb
   - pip:
