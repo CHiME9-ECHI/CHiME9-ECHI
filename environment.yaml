@@ -2,6 +2,7 @@ name: echi_recipe
 channels:
   - conda-forge
   - pytorch
+  - nvidia
 dependencies:
   - cython
   - hydra-core
@@ -10,14 +11,17 @@ dependencies:
   - matplotlib
   - numpy==1.26.4
   - omegaconf
+  - onnxruntime
   - pip
   - pysoundfile
   - pytorch
+  - pytorch-cuda
   - torchaudio
   - torchmetrics
   - tqdm
   - wandb
   - pip:
       - auraloss
-      - torch-stoi
+      - pysptk --prefer-binary
       - sentencepiece
+      - torch-stoi

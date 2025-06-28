@@ -36,11 +36,11 @@ fi
 
 # Install Versa from GitHub
 echo "Installing Versa Speech Audio Toolkit ..."
-python -m pip install git+https://github.com/wavlab-speech/versa.git#egg=versa-speech-audio-toolkit
+python -m pip install git+https://github.com/wavlab-speech/versa.git#egg=versa-speech-audio-toolkit --no-build-isolation
 
 # Install the pysepm package from GitHub
 echo "Installing pysepm ..."
-python -m pip install git+https://github.com/ftshijt/pysepm.git
+python -m pip install git+https://github.com/ftshijt/pysepm.git --no-build-isolation
 
 # Set PYTHONPATH
 echo "export PYTHONPATH=\$PWD/src:\$PYTHONPATH" >>~/.bashrc
