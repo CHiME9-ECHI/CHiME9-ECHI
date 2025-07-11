@@ -1,0 +1,24 @@
+name: baseline
+input:
+  sample_rate: 16000
+  channels: 4
+  rms: 0.0
+  use_spkid: true
+  type: stft
+  stft:
+    n_fft: 128
+    win_length: 128
+    hop_length: 64
+    window: hann
+params:
+  n_srcs: 1
+  n_imics: 4
+  n_layers: 3
+  lstm_hidden_units: 128
+  attn_n_head: 4
+  attn_qk_output_channel: 128
+  emb_dim: 64
+  emb_ks: 4
+  emb_hs: 1
+  activation: prelu
+  eps: 1.0e-05

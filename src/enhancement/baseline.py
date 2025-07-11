@@ -1,6 +1,5 @@
 import torch
 from omegaconf import OmegaConf
-import json
 from pathlib import Path
 from typing import Dict
 from tqdm import tqdm
@@ -15,6 +14,8 @@ class Baseline:
     def __init__(
         self,
         inference_dir: str,
+        config_path: str,
+        ckpt_path: str,
         audio_device: str,
         window_size: int,
         stride: int,
@@ -22,13 +23,11 @@ class Baseline:
     ):
         self.train_dir = Path(inference_dir).parent / f"train_{audio_device}"
 
-        self.train_cfg = self.get_train_config()
-        self.model_cfg = self.train_cfg.model
+        self.model_cfg = OmegaConf.load(config_path)
 
         self.stft = STFTWrapper(**self.model_cfg.input.stft, device=torch_device)
         self.stft = self.stft.to(torch_device)
 
-        ckpt_path = self.get_ckpt_path()
         self.model = get_model(self.model_cfg, ckpt_path)
         self.model = self.model.to(torch_device)
         self.model.eval()
@@ -52,15 +51,6 @@ class Baseline:
 
     def get_train_config(self):
         return OmegaConf.load(self.train_dir / "hydra/.hydra/config.yaml")
-
-    def get_ckpt_path(self):
-        with open(self.train_dir / "train_log.json", "r") as file:
-            train_log = json.load(file)
-
-        best_epoch = min(train_log, key=lambda x: x["val_loss"])["epoch"]
-        ckpt_path = self.train_dir / f"checkpoints/epoch{str(best_epoch).zfill(3)}.pt"
-
-        return ckpt_path
 
     def process_session(
         self,

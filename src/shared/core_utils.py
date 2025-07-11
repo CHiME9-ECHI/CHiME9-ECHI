@@ -9,7 +9,9 @@ import torch
 from shared.CausalMCxTFGridNet import MCxTFGridNet
 
 
-def get_model(cfg: DictConfig, ckpt_path: Optional[Path] = None) -> torch.nn.Module:
+def get_model(
+    cfg: DictConfig, ckpt_path: Optional[Path | str] = None
+) -> torch.nn.Module:
 
     if cfg.name == "baseline":
         model = MCxTFGridNet(**cfg.params)
@@ -17,7 +19,7 @@ def get_model(cfg: DictConfig, ckpt_path: Optional[Path] = None) -> torch.nn.Mod
         raise ValueError(f"Model {cfg.name} not recognised. Add code here!")
 
     if ckpt_path is not None:
-        ckpt = torch.load(ckpt_path)
+        ckpt = torch.load(ckpt_path, map_location=get_device())
         model.load_state_dict(ckpt)
 
     return model

@@ -2,6 +2,8 @@ name: baseline
 
 args:
   inference_dir: ${enhancement_dir}
+  config_path: checkpoints/${device}_config.yaml
+  ckpt_path: checkpoints/${device}_baseline.pt
   audio_device: ${device}
   window_size: 60
   stride: 56
