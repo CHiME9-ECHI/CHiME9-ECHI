@@ -42,7 +42,7 @@ def compute_stats(results):
     valid_keys = [k for k in results[0] if k not in NON_NUMERIC_KEYS]
 
     for key in valid_keys:
-        durations = [result["duration"] for result in results]
+        durations = [result["duration"] for result in results if key in result]
         data = [float(result[key]) for result in results if key in result]
         weighted_mean = np.average(data, weights=durations) if data else np.nan
         mean_value = np.mean(data) if data else np.nan
@@ -123,6 +123,7 @@ def report(cfg):
         results_file_base, ext = os.path.splitext(results_file)
         # The wildcard is used to accumulate over multiple batches
         results_files = glob(f"{results_file_base}*{ext}")
+
         if not results_files:
             logging.warning(f"No results found for device: {device}")
             continue
