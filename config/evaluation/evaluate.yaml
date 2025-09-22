@@ -10,8 +10,9 @@ ref_segment_dir: ${..paths.ref_segment_dir} # Path to the reference segment dire
 
 signal_id: ${..paths.signal_id} # naming convention for signals e.g. session.device.pid
 
-# score_config: config/eval/metrics.yaml
+# score_config: config/evaluation/metrics_quick.yaml
 score_config: config/evaluation/metrics.yaml
+
 
 use_gpu: false
 

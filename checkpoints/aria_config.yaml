@@ -1,5 +1,4 @@
 name: baseline
-
 input:
   sample_rate: 16000
   channels: 7
@@ -11,7 +10,6 @@ input:
     win_length: 128
     hop_length: 64
     window: hann
-
 params:
   n_srcs: 1
   n_imics: 7
