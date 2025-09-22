@@ -120,6 +120,8 @@ class MCxTFGridNet(nn.Module):
             additional (Dict or None): other data, currently unused in this model,
                     we return it also in output.
         """
+        spec = spec.transpose(2, 3)
+        spk = spk.transpose(1, 2)
         assert spec.size(-1) == 2, spec.shape
         feature = spec.moveaxis(-1, 2)
         spec = spec[:, :, 0] + 1j * spec[:, :, 1]
@@ -148,7 +150,7 @@ class MCxTFGridNet(nn.Module):
         batch = batch.view([n_batch, self.n_srcs, 2, n_frames, n_freqs])
         batch = torch.complex(batch[:, :, 0], batch[:, :, 1])
 
-        return batch.unsqueeze(1)  # , ilens, OrderedDict()
+        return batch.unsqueeze(1).transpose(-1, -2)  # , ilens, OrderedDict()
 
     @property
     def num_spk(self):
@@ -333,9 +335,11 @@ class GridNetV3Block(nn.Module):
 
         attn_mat = torch.matmul(Q, K) / (emb_dim**0.5)  # [B', T, T]
 
-        causal_mask = torch.tril(
-            torch.ones(attn_mat.shape[-1], attn_mat.shape[-1])
-        ).bool().to(attn_mat.device)
+        causal_mask = (
+            torch.tril(torch.ones(attn_mat.shape[-1], attn_mat.shape[-1]))
+            .bool()
+            .to(attn_mat.device)
+        )
         attn_mat = attn_mat.masked_fill(~causal_mask, float("-inf"))
 
         attn_mat = F.softmax(attn_mat, dim=2)  # [B', T, T]
@@ -433,7 +437,7 @@ class AuxEncoder(nn.Module):
     ) -> Tuple[torch.Tensor, torch.Tensor]:
 
         aux_lengths = (((aux_lengths // 3) // 3) // 3) // 3
-        auxs = auxs.transpose(2, 3)
+
         for i in range(len(self.aux_enc)):
             auxs = self.aux_enc[i](auxs)  # [B, C, T, F]
 
@@ -462,37 +466,6 @@ class FiLM(nn.Module):
         gamma = self.gamma_fc(cond).unsqueeze(-1).unsqueeze(-1)  # [B, C, 1, 1]
         beta = self.beta_fc(cond).unsqueeze(-1).unsqueeze(-1)  # [B, C, 1, 1]
         return gamma * x + beta
-
-
-class FusionModule(nn.Module):
-    def __init__(self, emb_dim, nhead=4, dropout=0.1):
-        super(FusionModule, self).__init__()
-        self.nhead = nhead
-        self.dropout = dropout
-        param_size = [1, 1, emb_dim]
-
-        self.attn = nn.MultiheadAttention(
-            emb_dim, num_heads=nhead, dropout=dropout, batch_first=True
-        )
-        self.fusion = nn.Conv2d(emb_dim * 2, emb_dim, kernel_size=1)
-        self.alpha = Parameter(torch.Tensor(*param_size).to(torch.float32))
-
-        nn.init.zeros_(self.alpha)
-
-    def forward(self, aux: torch.Tensor, esti: torch.Tensor) -> torch.Tensor:
-        B, C, F, T = esti.shape
-
-        aux = aux.unsqueeze(1)  # [B, 1, C]
-        flatten_esti = esti.flatten(start_dim=2).transpose(1, 2)  # [B, T*F, C]
-        # flatten_esti = esti
-
-        aux_adapt = self.attn(aux, flatten_esti, flatten_esti, need_weights=False)[0]
-        aux = aux + self.alpha * aux_adapt  # [B, 1, C]
-
-        aux = aux.unsqueeze(-1).transpose(1, 2).expand_as(esti)
-        esti = self.fusion(torch.cat((esti, aux), dim=1))  # [B, C, T, F]
-
-        return esti
 
 
 class EnUnetModule(nn.Module):
@@ -635,8 +608,8 @@ class LayerNormalization4DCF(nn.Module):
 
 
 if __name__ == "__main__":
-    model = MCxTFGridNet()
-    audio = torch.rand(1, 65, 1000, 2)
+    model = MCxTFGridNet(n_imics=4)
+    audio = torch.rand(1, 4, 65, 1000, 2)
     aux = torch.rand(1, 65, 1000, 2)
     aux_lens = torch.tensor([1000])
     out = model(audio, aux, aux_lens)

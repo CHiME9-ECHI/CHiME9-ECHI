@@ -1,4 +1,4 @@
-exp_name: baseline
+exp_name: baseline_fixed
 model_sample_rate: 16000
 
 # ###########

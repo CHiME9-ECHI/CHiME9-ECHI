@@ -188,7 +188,7 @@ def run(
             optimizer.zero_grad()
 
             processed = model(noisy, spk_id, batch["spkid_lens"]).squeeze(1)
-
+            print(processed.shape)
             if do_stft:
                 processed = stft.inverse(processed)
 
