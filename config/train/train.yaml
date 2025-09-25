@@ -1,4 +1,4 @@
-epochs: 100
+epochs: 50
 checkpoint_interval: 2
 lr: 5e-6
 clip_grad_norm: 1.0
