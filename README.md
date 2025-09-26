@@ -4,7 +4,7 @@
 
 This repository contains the baseline system for the CHiME-9 challenge, Task 2 ECHI.
 
-> **Quick start?** To get started with the data, [![Open In Colab(https://colab.research.google.com/assets/colab-badge.svg)]](https://colab.research.google.com/github/CHiME9-ECHI/CHiME9-ECHI/blob/main/Quickstart.ipynb), or jump to [Getting Started](#getting-started).
+> **Quick start?** To get started with the data, [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/CHiME9-ECHI/CHiME9-ECHI/blob/main/Quickstart.ipynb), or jump to [Getting Started](#getting-started).
 
 For detailed information on how to participate in the challenge and for obtaining the datasets, please refer to the [challenge website](https://www.chimechallenge.org/current/task2/index)
 
